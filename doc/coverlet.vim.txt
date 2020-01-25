@@ -1,0 +1,5 @@
+*coverlet.vim*  For Vim Version 8.1 LastChange: 2020 January 25
+
+For documentation see: https://github.com/nathanmentley/coverlet.vim
+
+ vim:tw=78:sw=4:ft=help:norl:
