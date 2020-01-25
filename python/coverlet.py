@@ -26,7 +26,8 @@ class Coverlet:
         *private* The currently configured file path to the coverlet json file.
 
     Methods
-    =======
+    -------
+
     clear_highlights()
         Clears the highlighting created in vim to display the coverlet data.
 
@@ -38,23 +39,26 @@ class Coverlet:
 
     _highlighted_lines = []
 
-    # TODO: Make these values configurable from vimrc or project specific config
-    _foreground_color = "black"
-    _uncovered_line_color = "red"
-    _covered_line_color = "green"
-    _coverlet_file = "/Users/nathanmentley/Projects/coverlet_tests/coverage.json"
+    _coverlet_file = ""
+    _foreground_color = ""
+    _uncovered_line_color = ""
+    _covered_line_color = ""
 
-    def __init__(self):
+    def __init__(self, file_name, fg_color = "black", uncovered_color = "red", covered_color = "green"):
         """
-        Ctor. Thi will load the coverlet data if it's found.
+        Ctor. Sets private values from vim configuration.
         """
-        self._load_coverlet_content()
+        self._coverlet_file = file_name
+        self._foreground_color = fg_color
+        self._uncovered_line_color = uncovered_color
+        self._covered_line_color = covered_color
 
     def _process_method(self, file_key, method_key, method_value):
         """
         Processes the method node from the coverlet json, and populates those values in the _coverlet_data attribute.
         """
         for line_key, line_value in method_value["Lines"].items():
+            # If the line value is 0 no test run has hit this line. Lets mark it as uncovered.
             if line_value == 0:
                 self._coverlet_data['files'][file_key]['uncovered_lines'].append(int(line_key))
             else:
@@ -119,7 +123,6 @@ class Coverlet:
         For the current buffer. We get the full file name and try to markup the file with coverage data.
         """
         current_buff = vim.current.buffer
-        print(current_buff.name)
 
         for line in self._get_uncovered_lines(current_buff.name):
             self._highlight_line(line, self._foreground_color, self._uncovered_line_color)
