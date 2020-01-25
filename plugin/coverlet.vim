@@ -2,7 +2,7 @@
 " A vim plugin to display coverlet code coverage info.
 " Copyright 2020 Nathan Mentley
 
-" variable defaults
+" variable defaults if they're not set by the user
 if !exists("g:coverlet_file_name")
     let g:coverlet_file_name="~/coverlet.json"
 endif
@@ -16,7 +16,10 @@ if !exists("g:coverlet_covered_color")
     let g:coverlet_covered_color="green"
 endif
 
-" load python code
+" setup local variables
+let s:coverlet_auto_display=0
+
+" load and run the python code
 let s:plugin_root_dir = fnamemodify(resolve(expand('<sfile>:p')), ':h')
 
 python3 << EOF
@@ -38,15 +41,36 @@ c_color = vim.eval('g:coverlet_covered_color')
 _coverlet = Coverlet(coverlet_file_name, fg_color, u_color, c_color)
 EOF
 
-" create vim functions for the python api
-function! CoverletClear()
-    python3 _coverlet.clear_highlights()
+" local vim function
+function! s:CoverletClearIfOn()
+    if s:coverlet_auto_display
+        python3 _coverlet.clear_highlights()
+    endif
 endfunction
 
-function! CoverletRefresh()
-    python3 _coverlet.refresh_coverlet()
+function! s:CoverletRefreshIfOn()
+    if s:coverlet_auto_display
+        python3 _coverlet.refresh_coverlet()
+    endif
 endfunction
 
-" refresh when entering a new buffer
- autocmd BufLeave * call CoverletClear()
- autocmd BufEnter * call CoverletRefresh()
+" hook into vim events
+autocmd BufLeave * call s:CoverletClearIfOn()
+autocmd BufEnter * call s:CoverletRefreshIfOn()
+
+" Create public api global methods for the user to hit
+function! g:CoverletToggle()
+    if s:coverlet_auto_display
+        python3 _coverlet.clear_highlights()
+        let s:coverlet_auto_display = 0
+    else
+        python3 _coverlet.refresh_coverlet()
+        let s:coverlet_auto_display = 1
+    endif
+endfunction
+
+function! g:CoverletRefresh()
+    if s:coverlet_auto_display
+        python3 _coverlet.refresh_coverlet()
+    endif
+endfunction
