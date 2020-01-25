@@ -1,5 +1,5 @@
 import json
-import time
+import os
 import vim
 
 class Coverlet:
@@ -70,6 +70,10 @@ class Coverlet:
         """
         self.clear_highlights()
         self._coverlet_data['files'] = {}
+
+        if not os.path.exists(self._coverlet_file):
+            print("Could not load coverlet file: " + self._coverlet_file)
+            return
 
         with open(self._coverlet_file) as json_file:
             data = json.load(json_file)
