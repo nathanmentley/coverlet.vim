@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class AbstractDisplayer(ABC):
+class AbstractReporter(ABC):
     """
     An abstract interface to display coverage data.
 

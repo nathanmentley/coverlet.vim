@@ -1,9 +1,9 @@
 import vim
 
-from abstract_displayer import AbstractDisplayer
+from abstract_reporter import AbstractReporter
 
 
-class VimDisplayer(AbstractDisplayer):
+class VimReporter(AbstractReporter):
     """
     An abstract interface to display coverage data.
 
