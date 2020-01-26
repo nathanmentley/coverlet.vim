@@ -34,7 +34,8 @@ plugin_root_dir = vim.eval('s:plugin_root_dir')
 python_root_dir = normpath(join(plugin_root_dir, '..', 'python'))
 sys.path.insert(0, python_root_dir)
 
-from coverlet import Coverlet, CoverletProcessor
+from coverlet import Coverlet
+from coverlet_processor import CoverletProcessor
 
 coverlet_file_name = vim.eval('g:coverlet_file_name')
 fg_color = vim.eval('g:coverlet_foreground_color')
