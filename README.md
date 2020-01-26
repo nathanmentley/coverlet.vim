@@ -45,6 +45,12 @@ Setting g:coverlet\_uncovered\_color will allow you to override the background c
 
 Setting g:coverlet\_covered\_color will allow you to override the background color for any text that is highlighted because it's covered by a unit test.
 
+#### g:coverlet\_branch\_color
+
+*Optional*
+
+Setting g:coverlet\_branch\_color will allow you to override the background color for any text that is highlighted because it's a branch that isn't full covered by unit tests.
+
 ### Global Functions
 
 #### CoverletToggle()
@@ -54,6 +60,10 @@ Chances are you won't want to always display which code is covered and which cod
 #### CoverletRefresh()
 
 Right now this plugin wont detect changes to the json file and automatically update the coverage information. If you've updated the coverlet file. You should run CoverletRefresh() to update what vim is showing.
+
+#### CoverletList()
+
+Opens an immutable buffer with a list of uncovered lines and uncovered branches.
 
 ### Example Setup
 
@@ -69,9 +79,11 @@ let g:coverlet_file_name = "/Users/nathanmentley/Projects/coverlet_tests/coverag
 let g:coverlet_foreground_color = "233"
 let g:coverlet_uncovered_color = "209"
 let g:coverlet_covered_color = "50"
+let g:coverlet_branch_color = "222"
 
 nmap <S-t> :call CoverletToggle()<CR>
-nmap <S-u> :call CoverletRefresh()<CR>
+nmap <S-u> :call CoverletList()<CR>
+nmap <S-y> :call CoverletRefresh()<CR>
 ```
 
 With this configuration you can press Shift-T to enable or disable coverlet.vim, and you can press Shift-U to refresh the data if it's displaying an old test run.
