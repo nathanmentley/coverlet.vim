@@ -1,6 +1,11 @@
 " coverlet.vim
 " A vim plugin to display coverlet code coverage info.
+" 
+" This file is subject to the terms and conditions defined in file 'LICENSE',
+"    which is part of this source code package.
+"
 " Copyright 2020 Nathan Mentley
+
 
 " variable defaults if they're not set by the user
 if !exists("g:coverlet_file_name")
