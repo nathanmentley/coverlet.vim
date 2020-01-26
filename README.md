@@ -86,7 +86,8 @@ nmap <S-u> :call CoverletList()<CR>
 nmap <S-y> :call CoverletRefresh()<CR>
 ```
 
-With this configuration you can press Shift-T to enable or disable coverlet.vim, and you can press Shift-U to refresh the data if it's displaying an old test run.
+With this configuration you can press Shift-T to enable or disable coverlet.vim, and you can press Shift-Y to refresh the data if it's displaying an old test run.
+Pressing Shift-U will display a buffer listing all the missing lines and non completely covered branches.
 
 ## Usage
 
