@@ -7,6 +7,12 @@ A simple vim plugin to display coverlet line coverage in vim.
 
 ## Installation
 
+### Requirements
+
+This has only been tested with vim 8.1, but should work with pretty old version of vim.
+
+This plugin requires that vim was compiled with python3 support.
+
 ### Plugin
 
 coverlet.vim can be install using most vim plugin managers.

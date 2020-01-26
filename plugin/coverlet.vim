@@ -36,6 +36,7 @@ sys.path.insert(0, python_root_dir)
 
 from coverlet import Coverlet
 from coverlet_processor import CoverletProcessor
+from vim_displayer import VimDisplayer
 
 coverlet_file_name = vim.eval('g:coverlet_file_name')
 fg_color = vim.eval('g:coverlet_foreground_color')
@@ -43,7 +44,7 @@ u_color = vim.eval('g:coverlet_uncovered_color')
 c_color = vim.eval('g:coverlet_covered_color')
 b_color = vim.eval('g:coverlet_branch_color')
 
-_coverlet = Coverlet(CoverletProcessor(), coverlet_file_name, fg_color, u_color, c_color, b_color)
+_coverlet = Coverlet(CoverletProcessor(), VimDisplayer(), coverlet_file_name, fg_color, u_color, c_color, b_color)
 EOF
 
 " local vim function

@@ -1,6 +1,3 @@
-import vim
-
-
 class Coverlet:
     """
     A class that displays coverage results in vim.
@@ -34,7 +31,10 @@ class Coverlet:
         *private* The currently configured file path to the coverlet json file.
 
     _processor: AbstractProcessor
-        *private* The file processor to use to parse the line data.
+        *private* The file processor to use to parse the coverage data with.
+
+    _reporter: AbstractReporter
+        *private* The reporter to use to display the coverage data with.
 
     Methods
     -------
@@ -55,6 +55,7 @@ class Coverlet:
     _coverlet_data = {}
 
     _processor = None
+    _displayer = None
     _coverlet_file = ""
     _foreground_color = ""
     _uncovered_line_color = ""
@@ -62,11 +63,12 @@ class Coverlet:
     _branch_color = ""
 
 
-    def __init__(self, processor, file_name, fg_color = "black", uncovered_color = "red", covered_color = "green", branch_color = "yellow"):
+    def __init__(self, processor, displayer, file_name, fg_color = "black", uncovered_color = "red", covered_color = "green", branch_color = "yellow"):
         """
         Ctor. Sets private values from vim configuration.
         """
         self._processor = processor
+        self._displayer = displayer
         
         self._coverlet_file = file_name
         
@@ -74,13 +76,6 @@ class Coverlet:
         self._uncovered_line_color = uncovered_color
         self._covered_line_color = covered_color
         self._branch_color = branch_color
-
-    def _run_commands(self, commands):
-        """
-        runs a list of commands in vim
-        """
-        for command in commands:
-            vim.command(command)
 
     def _load_coverlet_content(self):
         """
@@ -95,10 +90,7 @@ class Coverlet:
         if not line in self._highlighted_lines:
             self._highlighted_lines.append(line)
 
-        self._run_commands([
-            "highlight CoverletLine{0} ctermfg={1} ctermbg={2}".format(str(line), fcolor, bcolor),
-            'let s:coverlet_match_{0} = matchaddpos("CoverletLine{1}", [[{2}, 1, 1]])'.format(str(line), str(line), str(line))
-        ])
+        self._displayer.highlight_line(line, fcolor, bcolor)
 
     def _highlight_branch(self, branch, fcolor, bcolor):
         """
@@ -109,22 +101,7 @@ class Coverlet:
         if not key in self._highlighted_branches:
             self._highlighted_branches.append(key)
 
-        self._run_commands([
-            "highlight CoverletBranch{0} ctermfg={1} ctermbg={2}".format(key, fcolor, bcolor),
-            'let s:coverlet_branch_match_{0} = matchaddpos("CoverletBranch{1}", [[{2}, {3}, {4}]])'.format(key, key, branch["line"], branch["offset"], branch["endOffset"])
-        ])
-
-    def _clear_branch(self, key):
-        """
-        Removes a coverlet highlight in vim. This won't affect highlighting markup from other plugins.
-        """
-        vim.eval('matchdelete(s:coverlet_branch_match_{0})'.format(key))
-
-    def _clear_line(self, line):
-        """
-        Removes a coverlet highlight in vim. This won't affect highlighting markup from other plugins.
-        """
-        vim.eval('matchdelete(s:coverlet_match_{0})'.format(str(line)))
+        self._displayer.highlight_branch(key, branch, fcolor, bcolor)
 
     def _get_uncovered_lines(self, file_name):
         """
@@ -157,27 +134,16 @@ class Coverlet:
         """
         For the current buffer. We get the full file name and try to markup the file with coverage data.
         """
-        current_buff = vim.current.buffer
+        file_name = self._displayer.get_current_buffer_file_name()
 
-        for line in self._get_uncovered_lines(current_buff.name):
+        for line in self._get_uncovered_lines(file_name):
             self._highlight_line(line, self._foreground_color, self._uncovered_line_color)
 
-        for line in self._get_covered_lines(current_buff.name):
+        for line in self._get_covered_lines(file_name):
             self._highlight_line(line, self._foreground_color, self._covered_line_color)
 
-        for branch in self._get_branches(current_buff.name):
+        for branch in self._get_branches(file_name):
             self._highlight_branch(branch, self._foreground_color, self._branch_color)
-
-    def _create_new_buffer(self, file_name, contents):
-        """
-        Creates a new buffer with the passed content
-        """
-        self._run_commands([
-            'rightbelow vsplit {0}'.format(file_name),
-            'normal! ggdG',
-            'setlocal buftype=nowrite',
-            'call append(0, {0})'.format(contents)
-        ])
 
     def display_coverage_info_buffer(self):
         data = ["Coverage Data"]
@@ -188,19 +154,19 @@ class Coverlet:
                     data.append("{0}:{1} not covered.".format(file_name, line))
                 for branch in self._coverlet_data['files'][file_name]['branches']:
                     data.append("{0}:{1} branch uncovered.".format(file_name, branch["line"]))
-            self._create_new_buffer("Coverage Info", data)
+            self._displayer.create_new_buffer("Coverage Info", data)
         else:
-            self._create_new_buffer("Coverage Info", ["No coverage data."])
+            self._displayer.create_new_buffer("Coverage Info", ["No coverage data."])
 
     def clear_highlights(self):
         """
         Clears the highlighting created in vim to display the coverlet data.
         """
         for line in self._highlighted_lines:
-            self._clear_line(line)
+            self._displayer.clear_line(line)
         self._highlighted_lines = []
         for key in self._highlighted_branches:
-            self._clear_branch(key)
+            self._displayer.clear_branch(key)
         self._highlighted_branches = []
 
     def refresh_coverlet(self):
