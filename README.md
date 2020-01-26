@@ -3,6 +3,8 @@ coverlet.vim
 
 A simple vim plugin to display coverlet line coverage in vim.
 
+![Screen Shot](/doc/screenshot.png?raw=true "Screen Shot")
+
 ## Installation
 
 ### Plugin
