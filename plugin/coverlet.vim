@@ -34,7 +34,7 @@ plugin_root_dir = vim.eval('s:plugin_root_dir')
 python_root_dir = normpath(join(plugin_root_dir, '..', 'python'))
 sys.path.insert(0, python_root_dir)
 
-from coverlet import Coverlet
+from coverlet import Coverlet, CoverletProcessor
 
 coverlet_file_name = vim.eval('g:coverlet_file_name')
 fg_color = vim.eval('g:coverlet_foreground_color')
@@ -42,7 +42,7 @@ u_color = vim.eval('g:coverlet_uncovered_color')
 c_color = vim.eval('g:coverlet_covered_color')
 b_color = vim.eval('g:coverlet_branch_color')
 
-_coverlet = Coverlet(coverlet_file_name, fg_color, u_color, c_color, b_color)
+_coverlet = Coverlet(CoverletProcessor(), coverlet_file_name, fg_color, u_color, c_color, b_color)
 EOF
 
 " local vim function
